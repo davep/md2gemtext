@@ -1,6 +1,6 @@
 [project]
 name = "md2gemtext"
-version = "0.1.0"
+version = "0.0.1"
 description = "A simple library for converting Markdown to Gemtext"
 readme = "README.md"
 authors = [
