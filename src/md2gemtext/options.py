@@ -2,7 +2,6 @@
 
 ##############################################################################
 # Python imports.
-from collections.abc import Sequence
 from typing import Literal, NamedTuple
 
 ##############################################################################
@@ -31,7 +30,9 @@ class Options(NamedTuple):
     hide_front_matter: bool = False
     """Whether to hide front matter. If False (default), emits it as preformatted text."""
 
-    extra_linkable_protocols: Sequence[str] = ()
+    extra_linkable_protocols: (
+        list[str] | tuple[str, ...] | set[str] | frozenset[str]
+    ) = ()
     """Additional protocol names to linkify (e.g. ['spartan', 'finger', 'nex'])."""
 
     preformat_tables: bool = True
