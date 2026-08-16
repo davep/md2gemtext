@@ -638,9 +638,9 @@ class MarkdownToGemtextConverter:
         tokens = self._md.parse(markdown_content)
         document: list[ContentCapture] = []
 
-        i = 0
-        while i < len(tokens):
-            token = tokens[i]
+        token_index = 0
+        while token_index < len(tokens):
+            token = tokens[token_index]
 
             match token.type:
                 # Front matter
@@ -654,16 +654,16 @@ class MarkdownToGemtextConverter:
                 # Heading
                 case "heading_open":
                     level = int(token.tag[1:]) if len(token.tag) > 1 else 1
-                    i += 1
-                    inline_token = tokens[i]
+                    token_index += 1
+                    inline_token = tokens[token_index]
                     text, links = self._render_inline(inline_token, with_markers=True)
-                    i += 1  # heading_close
+                    token_index += 1  # heading_close
                     document.append(Heading(level, text, links, self._options))
 
                 # Paragraph
                 case "paragraph_open":
-                    i += 1
-                    inline_token = tokens[i]
+                    token_index += 1
+                    inline_token = tokens[token_index]
                     if (
                         inline_token.children
                         and len(inline_token.children) == 1
@@ -681,22 +681,26 @@ class MarkdownToGemtextConverter:
                             inline_token, with_markers=True
                         )
                         document.append(Paragraph(text, links, self._options))
-                    i += 1  # paragraph_close
+                    token_index += 1  # paragraph_close
 
                 # Bullet / Unordered list
                 case "bullet_list_open":
-                    i += 1
+                    token_index += 1
                     list_items: list[ListItem] = []
-                    while i < len(tokens) and tokens[i].type != "bullet_list_close":
-                        if tokens[i].type == "list_item_open":
-                            i += 1
+                    while (
+                        token_index < len(tokens)
+                        and tokens[token_index].type != "bullet_list_close"
+                    ):
+                        if tokens[token_index].type == "list_item_open":
+                            token_index += 1
                             item_inline_tokens: list[Token] = []
                             while (
-                                i < len(tokens) and tokens[i].type != "list_item_close"
+                                token_index < len(tokens)
+                                and tokens[token_index].type != "list_item_close"
                             ):
-                                if tokens[i].type == "inline":
-                                    item_inline_tokens.append(tokens[i])
-                                i += 1
+                                if tokens[token_index].type == "inline":
+                                    item_inline_tokens.append(tokens[token_index])
+                                token_index += 1
                             for inline_tok in item_inline_tokens:
                                 if self._is_solo_link_inline(inline_tok):
                                     text, links = self._render_inline(
@@ -722,7 +726,7 @@ class MarkdownToGemtextConverter:
                                             options=self._options,
                                         )
                                     )
-                        i += 1
+                        token_index += 1
                     if list_items:
                         list_items[-1].mark_last_in_list()
                         document.extend(list_items)
@@ -731,19 +735,26 @@ class MarkdownToGemtextConverter:
                 case "ordered_list_open":
                     start_num = int(token.attrs.get("start", 1)) if token.attrs else 1
                     curr_num = start_num
-                    i += 1
-                    while i < len(tokens) and tokens[i].type != "ordered_list_close":
-                        if tokens[i].type == "list_item_open":
-                            if tokens[i].info and tokens[i].info.isdigit():
-                                curr_num = int(tokens[i].info)
-                            i += 1
+                    token_index += 1
+                    while (
+                        token_index < len(tokens)
+                        and tokens[token_index].type != "ordered_list_close"
+                    ):
+                        if tokens[token_index].type == "list_item_open":
+                            if (
+                                tokens[token_index].info
+                                and tokens[token_index].info.isdigit()
+                            ):
+                                curr_num = int(tokens[token_index].info)
+                            token_index += 1
                             item_inline_tokens = []
                             while (
-                                i < len(tokens) and tokens[i].type != "list_item_close"
+                                token_index < len(tokens)
+                                and tokens[token_index].type != "list_item_close"
                             ):
-                                if tokens[i].type == "inline":
-                                    item_inline_tokens.append(tokens[i])
-                                i += 1
+                                if tokens[token_index].type == "inline":
+                                    item_inline_tokens.append(tokens[token_index])
+                                token_index += 1
                             for inline_tok in item_inline_tokens:
                                 text, links = self._render_inline(
                                     inline_tok, with_markers=True
@@ -757,7 +768,7 @@ class MarkdownToGemtextConverter:
                                     )
                                 )
                             curr_num += 1
-                        i += 1
+                        token_index += 1
 
                 # Fenced code block
                 case "fence":
@@ -775,12 +786,18 @@ class MarkdownToGemtextConverter:
                     quote_paragraphs: list[str] = []
                     quote_links: list[tuple[str, str, str]] = []
                     quote_link_counter = 0
-                    while i < len(tokens) and tokens[i].type == "blockquote_open":
-                        i += 1
-                        while i < len(tokens) and tokens[i].type != "blockquote_close":
-                            if tokens[i].type == "inline":
+                    while (
+                        token_index < len(tokens)
+                        and tokens[token_index].type == "blockquote_open"
+                    ):
+                        token_index += 1
+                        while (
+                            token_index < len(tokens)
+                            and tokens[token_index].type != "blockquote_close"
+                        ):
+                            if tokens[token_index].type == "inline":
                                 text, links = self._render_inline(
-                                    tokens[i],
+                                    tokens[token_index],
                                     with_markers=True,
                                     start_marker_index=quote_link_counter,
                                 )
@@ -788,8 +805,8 @@ class MarkdownToGemtextConverter:
                                 if text:
                                     quote_paragraphs.append(text)
                                 quote_links.extend(links)
-                            i += 1
-                        i += 1  # Skip blockquote_close
+                            token_index += 1
+                        token_index += 1  # Skip blockquote_close
 
                     document.append(
                         Blockquote(quote_paragraphs, quote_links, self._options)
@@ -798,23 +815,27 @@ class MarkdownToGemtextConverter:
 
                 # Footnotes block
                 case "footnote_block_open":
-                    i += 1
-                    while i < len(tokens) and tokens[i].type != "footnote_block_close":
-                        if tokens[i].type == "footnote_open":
+                    token_index += 1
+                    while (
+                        token_index < len(tokens)
+                        and tokens[token_index].type != "footnote_block_close"
+                    ):
+                        if tokens[token_index].type == "footnote_open":
                             fn_id = (
-                                int(tokens[i].meta.get("id", 0))
-                                if tokens[i].meta
+                                int(tokens[token_index].meta.get("id", 0))
+                                if tokens[token_index].meta
                                 else 0
                             )
                             sup_label = to_superscript_number(fn_id + 1)
-                            i += 1
+                            token_index += 1
                             fn_inline_tokens: list[Token] = []
                             while (
-                                i < len(tokens) and tokens[i].type != "footnote_close"
+                                token_index < len(tokens)
+                                and tokens[token_index].type != "footnote_close"
                             ):
-                                if tokens[i].type == "inline":
-                                    fn_inline_tokens.append(tokens[i])
-                                i += 1
+                                if tokens[token_index].type == "inline":
+                                    fn_inline_tokens.append(tokens[token_index])
+                                token_index += 1
                             for inline_tok in fn_inline_tokens:
                                 text, links = self._render_inline(
                                     inline_tok, with_markers=True
@@ -827,7 +848,7 @@ class MarkdownToGemtextConverter:
                                         options=self._options,
                                     )
                                 )
-                        i += 1
+                        token_index += 1
 
                 # Thematic break / Horizontal rule
                 case "hr":
@@ -843,9 +864,12 @@ class MarkdownToGemtextConverter:
                     in_thead = False
                     current_row: list[str] = []
 
-                    i += 1
-                    while i < len(tokens) and tokens[i].type != "table_close":
-                        tok = tokens[i]
+                    token_index += 1
+                    while (
+                        token_index < len(tokens)
+                        and tokens[token_index].type != "table_close"
+                    ):
+                        tok = tokens[token_index]
                         if tok.type == "thead_open":
                             in_thead = True
                         elif tok.type == "thead_close":
@@ -877,7 +901,7 @@ class MarkdownToGemtextConverter:
                             else:
                                 current_row.append(text)
                             table_links.extend(links)
-                        i += 1
+                        token_index += 1
 
                     num_cols = (
                         len(header_cells)
@@ -975,7 +999,7 @@ class MarkdownToGemtextConverter:
                 case _:
                     pass
 
-            i += 1
+            token_index += 1
 
         return "\n".join(str(capture) for capture in document)
 
