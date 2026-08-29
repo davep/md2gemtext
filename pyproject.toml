@@ -1,6 +1,6 @@
 [project]
 name = "md2gemtext"
-version = "0.1.1"
+version = "1.0.0"
 description = "A library for converting Markdown to Gemtext"
 readme = "README.md"
 authors = [
@@ -27,7 +27,7 @@ keywords = [
     "smolweb",
 ]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 5 - Production/Stable",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3",
