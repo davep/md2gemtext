@@ -681,11 +681,11 @@ It is passed a string of Markdown you wish to convert, and returns the converted
 Gemtext string:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">md2gemtext</span><span class="w"> </span><span class="kn">import</span> <span class="n">markdown_to_gemtext</span><span class="p">,</span> <span class="n">Options</span>
 
-<span class="n">markdown</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">markdown</span> <span class="o">=</span> <span class="s2">"""</span>
 <span class="s2"># Welcome</span>
 
 <span class="s2">This is a paragraph with [a link](https://example.com) inside.</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">gemtext</span> <span class="o">=</span> <span class="n">markdown_to_gemtext</span><span class="p">(</span><span class="n">markdown</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">gemtext</span><span class="p">)</span>
@@ -707,10 +707,10 @@ This is a paragraph with a link{a} inside.
     <span class="n">space_after_blockquotes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="c1"># Add empty line after blockquotes</span>
     <span class="n">space_after_lists</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>       <span class="c1"># Add empty line after runs of list items</span>
     <span class="n">hide_front_matter</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>       <span class="c1"># Hide/filter out front matter (default is False, which emits it)</span>
-    <span class="n">extra_linkable_protocols</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;spartan&quot;</span><span class="p">,</span> <span class="s2">&quot;finger&quot;</span><span class="p">,</span> <span class="s2">&quot;nex&quot;</span><span class="p">],</span> <span class="c1"># Additional protocols to linkify</span>
-    <span class="n">preformat_tables</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>        <span class="c1"># Emit tables as preformatted blocks with alt-text &#39;table&#39;</span>
-    <span class="n">html_block_handling</span><span class="o">=</span><span class="s2">&quot;convert&quot;</span><span class="p">,</span> <span class="c1"># HTML blocks: &#39;convert&#39;, &#39;preformat&#39;, or &#39;striptags&#39;</span>
-    <span class="n">html_inline_handling</span><span class="o">=</span><span class="s2">&quot;striptags&quot;</span><span class="p">,</span> <span class="c1"># Inline HTML tags: &#39;striptags&#39; (default) or &#39;keep&#39;</span>
+    <span class="n">extra_linkable_protocols</span><span class="o">=</span><span class="p">[</span><span class="s2">"spartan"</span><span class="p">,</span> <span class="s2">"finger"</span><span class="p">,</span> <span class="s2">"nex"</span><span class="p">],</span> <span class="c1"># Additional protocols to linkify</span>
+    <span class="n">preformat_tables</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>        <span class="c1"># Emit tables as preformatted blocks with alt-text 'table'</span>
+    <span class="n">html_block_handling</span><span class="o">=</span><span class="s2">"convert"</span><span class="p">,</span> <span class="c1"># HTML blocks: 'convert', 'preformat', or 'striptags'</span>
+    <span class="n">html_inline_handling</span><span class="o">=</span><span class="s2">"striptags"</span><span class="p">,</span> <span class="c1"># Inline HTML tags: 'striptags' (default) or 'keep'</span>
 <span class="p">)</span>
 
 <span class="n">gemtext</span> <span class="o">=</span> <span class="n">markdown_to_gemtext</span><span class="p">(</span><span class="n">markdown</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>
@@ -732,7 +732,7 @@ md2gemtext<span class="w"> </span>--extra-protocol<span class="w"> </span>sparta
 <span class="c1"># Emit tables as plain aligned text instead of preformatted blocks</span>
 md2gemtext<span class="w"> </span>--no-preformat-tables<span class="w"> </span>document.md
 
-<span class="c1"># Set HTML block handling mode (&#39;convert&#39;, &#39;preformat&#39;, or &#39;striptags&#39;)</span>
+<span class="c1"># Set HTML block handling mode ('convert', 'preformat', or 'striptags')</span>
 md2gemtext<span class="w"> </span>--html-block-handling<span class="w"> </span>preformat<span class="w"> </span>document.md
 
 <span class="c1"># Keep inline HTML tags rather than stripping them</span>
